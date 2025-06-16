@@ -1,10 +1,37 @@
+from django.db.models import QuerySet
 from django.http import HttpResponse, HttpRequest
 from django.shortcuts import render, redirect, resolve_url
+from django.views.generic import ListView
 from pyperclip import copy
 
 from common.forms import CommentForm, SearchForm
 from common.models import Like
 from photos.models import Photo
+
+
+class HomePageView(ListView):
+    model = Photo
+    template_name = "common/home-page.html"
+    context_object_name = "all_photos"
+    paginate_by = 5
+    
+    def get_context_data(self, *, object_list: list=None, **kwargs) -> dict:
+        kwargs.update({
+            "comment_form": CommentForm(),
+            "search_form": SearchForm(),
+        })
+        return super().get_context_data(object_list=object_list, **kwargs)
+
+    def get_queryset(self) -> QuerySet:
+        queryset = super().get_queryset()
+        pet_name = self.request.GET.get('text')
+
+        if pet_name:
+            queryset = queryset.prefetch_related('tagged_pets', 'like_set').filter(
+                tagged_pets__name__icontains=pet_name
+            )
+
+        return queryset
 
 
 def home_page_view(request: HttpRequest) -> HttpResponse:
