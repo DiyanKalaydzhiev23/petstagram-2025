@@ -6,7 +6,8 @@
             <div class="logo">
                 <!-- Link to Home Page -->
                 <a href="#">
-                    <img width="50px" src="{% static 'images/free-30-instagram-stories-icons23_122570.png' %}" alt="img1">
+                    <img width="50px" src="{% static 'images/free-30-instagram-stories-icons23_122570.png' %}"
+                         alt="img1">
                 </a>
 
                 <!-- Link to Home Page -->
@@ -31,20 +32,35 @@
                             <i>Add Photo</i>
                         </a>
                     </li>
-                    <li class="nav-item">
+                    {% if not request.user.is_authenticated %}
+                        <li class="nav-item">
+                            <!-- Link to Login Page -->
+                            <a href="{% url 'login' %}">
+                                <i>Login</i>
+                            </a>
+                        </li>
+                        <li class="nav-item">
 
-                        <!-- Link to Login Page -->
-                        <a href="{% url 'login' %}">
-                            <i>Login</i>
-                        </a>
-                    </li>
-                    <li class="nav-item">
+                            <!-- Link to Register Page -->
+                            <a href="{% url 'register' %}">
+                                <i>Register</i>
+                            </a>
+                        </li>
+                    {% else %}
 
-                        <!-- Link to Register Page -->
-                        <a href="{% url 'register' %}">
-                            <i>Register</i>
-                        </a>
-                    </li>
+                        <li class="nav-item">
+                            <!-- Link to Profile Page -->
+                            <a href="{% url 'profile-details' request.user.pk %}">
+                                <i>Profile</i>
+                            </a>
+                        </li>
+
+                        <form method="post" action="{% url 'logout' %}">
+                            {% csrf_token %}
+                            <button class="button" type="submit"><i>Logout</i></button>
+                        </form>
+
+                    {% endif %}
                 </ul>
             </div>
         </div>

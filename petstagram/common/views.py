@@ -1,6 +1,7 @@
 from django.db.models import QuerySet
 from django.http import HttpResponse, HttpRequest
 from django.shortcuts import render, redirect, resolve_url
+from django.template.context_processors import request
 from django.views.generic import ListView
 from pyperclip import copy
 
@@ -55,13 +56,14 @@ def home_page_view(request: HttpRequest) -> HttpResponse:
 
 
 def like(request: HttpRequest, photo_id: int) -> HttpResponse:
-    like_object = Like.objects.filter(to_photo_id=photo_id).first()
+    like_object = Like.objects.filter(to_photo_id=photo_id, user=request.user).first()
 
     if like_object:
         like_object.delete()
     else:
         Like.objects.create(
-            to_photo_id=photo_id
+            to_photo_id=photo_id,
+            user=request.user,
         )
 
     return redirect(request.META.get('HTTP_REFERER') + f"#{photo_id}")
@@ -81,6 +83,7 @@ def add_comment(request: HttpRequest, photo_id: int) -> HttpResponse:
     if request.method == "POST" and form.is_valid():
         comment = form.save(commit=False)
         comment.to_photo = Photo.objects.get(pk=photo_id)
+        comment.user = request.user
         comment.save()
 
     return redirect(request.META.get('HTTP_REFERER') + f"#{photo_id}")

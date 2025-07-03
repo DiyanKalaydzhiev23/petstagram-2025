@@ -7,15 +7,14 @@
                 <div class="profilepic">
                     <div class="profile_img">
                         <div class="image">
-                            <!-- User Profile Image -->
-                            <img src="/static/images/person.png" alt="img8">
+                            {% include 'common/profile-image.html' with profile_picture=comment.user.profile.profile_picture %}
                         </div>
                     </div>
                 </div>
                 <p>
                     <!-- Link to User Profile Details Page-->
                     <!-- User First and/or Last Name or username-->
-                    <a href="">Steven Ivanov</a>
+                    <a href="">{{ comment.user.profile.full_name|default:'anonymous' }}</a>
                     <!-- User Comment -->
                     - {{ comment.text }}
                 </p>

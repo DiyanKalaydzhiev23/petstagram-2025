@@ -9,15 +9,15 @@
                 <div class="profilepic">
                     <div class="profile_img">
                         <div class="image">
-                            <img src="/static/images/person.png" alt="img8">
+                            {% include 'common/profile-image.html' with profile_picture=photo.user.profile.profile_picture %}
                         </div>
                     </div>
                 </div>
             </a>
             <h3>
-                <a href="profile details">
+                <a href="{% url 'profile-details' photo.user.pk %}">
                     <!-- if user has first name and last name -->
-                    Diyan Kalaydzhiev
+                    {{ photo.user.profile.full_name|default:'anonymous' }}
                     <!-- else -->
                     <!-- user username -->
                 </a>
@@ -25,7 +25,7 @@
                 <!-- if the photo has location -->
                 <span>{{ photo.location }}</span>
 
-                {% if editable %}
+                {% if editable and request.user.pk == photo.user.pk %}
                     <div class="edit-delete-btns">
 
                         <!-- Link to Edit Pet Photo Page -->
@@ -78,7 +78,7 @@
 
         <!-- tagged pets -->
         {% for pet in photo.tagged_pets.all %}
-            <a href="{% url 'pet-details' username=request.user.username|default:"anonymous" pet_slug=pet.slug %}">
+            <a href="{% url 'pet-details' pet.user.full_name|default:'anonymous' pet.slug %}">
                 <p class="message">
                     <b>{{ pet.name }}</b>
                 </p>

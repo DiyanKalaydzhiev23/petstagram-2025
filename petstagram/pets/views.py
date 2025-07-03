@@ -1,15 +1,23 @@
+from django.contrib.auth.mixins import UserPassesTestMixin, LoginRequiredMixin
 from django.urls import reverse_lazy, reverse
 from django.views.generic import CreateView, DetailView, UpdateView, DeleteView
 from common.forms import CommentForm
+from common.mixins import UserIsOwnerMixin
 from pets.forms import PetCreateForm, PetEditForm, PetDeleteForm
 from pets.models import Pet
 
 
-class PetAddView(CreateView):
+class PetAddView(LoginRequiredMixin, CreateView):
     model = Pet
     form_class = PetCreateForm
     success_url = reverse_lazy('profile-details', kwargs={'pk': 1})
     template_name = "pets/pet-add-page.html"
+
+    def form_valid(self, form):
+        self.object = form.save(commit=False)
+        self.object.user = self.request.user
+        self.object.save()
+        return super().form_valid(form)
 
 
 class PetDetailsView(DetailView):
@@ -25,7 +33,7 @@ class PetDetailsView(DetailView):
         return super().get_context_data(**kwargs)
 
 
-class PetEditView(UpdateView):
+class PetEditView(LoginRequiredMixin, UserIsOwnerMixin, UpdateView):
     model = Pet
     form_class = PetEditForm
     template_name = "pets/pet-edit-page.html"
@@ -41,7 +49,7 @@ class PetEditView(UpdateView):
         )
 
 
-class PetDeleteView(DeleteView):
+class PetDeleteView(LoginRequiredMixin, UserIsOwnerMixin, DeleteView):
     model = Pet
     template_name = "pets/pet-delete-page.html"
     success_url = reverse_lazy("profile-details", kwargs={"pk": 1})
