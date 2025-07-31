@@ -1,3 +1,4 @@
+from cloudinary.models import CloudinaryField
 from django.contrib.auth import get_user_model
 from django.core.validators import MinLengthValidator
 from django.db import models
@@ -10,11 +11,11 @@ UserModel = get_user_model()
 
 
 class Photo(models.Model):
-    photo = models.FileField(
+    photo = CloudinaryField(
+        resource_type='image',
         validators=[
             FileSizeValidator(5),
         ],
-        upload_to='files',
     )
 
     description = models.TextField(
