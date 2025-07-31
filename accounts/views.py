@@ -1,6 +1,4 @@
-from lib2to3.fixes.fix_input import context
 from urllib.request import Request
-
 from django.contrib.auth import get_user_model, login
 from django.contrib.auth.mixins import UserPassesTestMixin, LoginRequiredMixin
 from django.db.models import Count, Sum
